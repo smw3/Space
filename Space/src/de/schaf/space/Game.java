@@ -1,7 +1,5 @@
 package de.schaf.space;
 
-import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
-import static org.lwjgl.opengl.GL11.GL_LEQUAL;
 import static org.lwjgl.opengl.GL11.glClearColor;
 import static org.lwjgl.opengl.GL11.glOrtho;
 
@@ -10,6 +8,7 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GLContext;
 
 public class Game {
 
@@ -85,30 +84,22 @@ public class Game {
 
 
 	private void initGL() {
-        //if (!GLContext.getCapabilities().GL_EXT_framebuffer_object) {
-        //    System.out.println("FBO not supported");
-        //}
+        if (!GLContext.getCapabilities().GL_EXT_framebuffer_object) {
+            System.err.println("FBO not supported");
+        }
         GL11.glMatrixMode(GL11.GL_PROJECTION);
         GL11.glLoadIdentity();
-        //GL11.glOrtho(0, 800, 600, 0 , 1, 100);
+
         glOrtho(0, RENDER_WIDTH, RENDER_HEIGHT, 0, 10, -10);
         GL11.glMatrixMode(GL11.GL_MODELVIEW);
         GL11.glLoadIdentity();
 
-        GL11.glDepthFunc(GL_LEQUAL);
-        GL11.glEnable(GL_DEPTH_TEST);
-        //GL11.glDisable(GL11.GL_DEPTH_TEST);
+        GL11.glDisable(GL11.GL_DEPTH_TEST);
 
         GL11.glEnable(GL11.GL_TEXTURE_2D);
 
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        //glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_CONSTANT_COLOR);
-        //GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
-
-
-        //GL11.glEnable(GL11.GL_ALPHA_TEST);
-        //GL11.glAlphaFunc(GL11.GL_GREATER, 0);
     }
     
     private void render() {
