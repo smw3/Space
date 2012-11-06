@@ -2,5 +2,8 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/lwjgl"/>
+	<classpathentry kind="lib" path="C:/Slick-Util/slick-util.jar"/>
+	<classpathentry kind="lib" path="C:/fastpng/fastpng-1.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
