@@ -8,6 +8,8 @@ public class Entity {
 	private Rectangle positionSize = new Rectangle(0f,0f,0f,0f);
 	private float angle = 0f;
 	
+	private String name = "";
+	
 	public Entity() {
 
 	}
@@ -60,4 +62,12 @@ public class Entity {
 	}
 	
 	public void update(int delta) {}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
 }
