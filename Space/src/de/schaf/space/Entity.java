@@ -1,68 +1,63 @@
 package de.schaf.space;
 
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.util.vector.Vector3f;
-import org.newdawn.slick.opengl.Texture;
+import org.newdawn.slick.geom.Rectangle;
+import org.newdawn.slick.geom.Vector2f;
 
 public class Entity {
-	private Vector3f Position = new Vector3f();
-
-	private Texture Texture = null;
-
+	// Purely a way to save position and size, not representative of hitbox or graphic
+	private Rectangle positionSize = new Rectangle(0f,0f,0f,0f);
+	private float angle = 0f;
+	
 	public Entity() {
 
 	}
 
-	public Vector3f getPosition() {
-		return Position;
+	public Vector2f getPosition() {
+		return new Vector2f(positionSize.getX(),positionSize.getY());
 	}
 
-	public void setPosition(Vector3f position) {
-		Position = position;
+	public void setPosition(Vector2f position) {
+		positionSize.setX(position.x);
+		positionSize.setY(position.y);
+	}
+	
+	public void setPosition(float x, float y) {
+		positionSize.setX(x);
+		positionSize.setY(y);
+	}
+	
+	public float getWidth() {
+		return positionSize.getWidth();
+	}
+	
+	public float getHeight() {
+		return positionSize.getHeight();
+	}
+	
+	public void setSize(Vector2f size) {
+		positionSize.setSize(size.x, size.y);
+	}
+	
+	public void setSize(float w, float h) {
+		positionSize.setSize(w,h);
+	}
+	
+	public void setWidth(float w) {
+		positionSize.setWidth(w);
+	}
+	
+	public void setHeight(float w) {
+		positionSize.setHeight(w);
 	}
 
-	public Texture getTexture() {
-		return Texture;
+	public float getAngle() {
+		return angle;
 	}
 
-	public void setTexture(Texture tex) {
-		Texture = tex;
+	public void setAngle(float angle) {
+		this.angle = angle;
+		while (this.angle > 2*Math.PI) this.angle -= 2*Math.PI;
 	}
-
-	public void Render() throws CorruptTextureException {
-		if (Texture == null)
-			throw new CorruptTextureException("Nullpointer");
-		GL11.glPushMatrix();
-		{
-			GL11.glTranslatef(getPosition().x,getPosition().y,0f);
-			Texture.bind();
-			doQuad();
-		}
-	}
-
-	private void doQuad() {
-		GL11.glPushMatrix();
-		{
-			GL11.glTranslatef(-.5f, -.5f, 0f);
-			GL11.glBegin(GL11.GL_TRIANGLE_STRIP);
-			{
-				GL11.glNormal3f(0f, 0f, 1f);
-
-				GL11.glTexCoord2f(0, 0);
-				GL11.glVertex2f(0, 0);
-
-				GL11.glTexCoord2f(0, getTexture().getHeight());
-				GL11.glVertex2f(0, 1);
-
-				GL11.glTexCoord2f(getTexture().getWidth(), getTexture()
-						.getHeight());
-				GL11.glVertex2f(1, 0);
-
-				GL11.glTexCoord2f(getTexture().getWidth(), 0);
-				GL11.glVertex2f(1, 1);
-			}
-		}
-		GL11.glPopMatrix();
-	}
-
+	
+	public void update(int delta) {}
 }

@@ -1,137 +1,172 @@
 package de.schaf.space;
 
-import static org.lwjgl.opengl.GL11.glClearColor;
-import static org.lwjgl.opengl.GL11.glOrtho;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map.Entry;
 
 import org.lwjgl.LWJGLException;
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GLContext;
+import org.newdawn.slick.AppGameContainer;
+import org.newdawn.slick.BasicGame;
+import org.newdawn.slick.GameContainer;
+import org.newdawn.slick.Graphics;
+import org.newdawn.slick.Input;
+import org.newdawn.slick.SlickException;
 
-public class Game {
+public class Game extends BasicGame {
 
-	public static final int RENDER_WIDTH = 1024;
-	public static final int RENDER_HEIGHT = 768;
-	
 	private boolean vsync = false;
-	
+
 	private long lastFrame;
-    private long lastFPS;
-    private int fps;
-    long delta;
+	private long lastFPS;
+	private int fps;
+	long delta;
 
+	private boolean showHitbox = false;
+	private Renderer hitboxRenderer = new RendererRectangle();
+
+	public HashMap<Entity, Renderer> GameObjects = new HashMap<Entity, Renderer>();
+
+	private Input input;
+
+	public Game() {
+		super("Space");
+	}
+
+	/* Gameloop */
+
+	@Override
+	public void init(GameContainer gc) throws SlickException {
+		Entity E = new EntityControlledPlayer();
+		Renderer R = new RendererTriangle();
+		GameObjects.put(E, R);
+
+		input = new Input(gc.getHeight());
+	}
+
+	@Override
+	public void render(GameContainer gc, Graphics g) throws SlickException {
+		for (Entry<Entity, Renderer> GameObject : GameObjects.entrySet()) {
+			Renderer R;
+
+			if (!showHitbox) {
+				R = GameObject.getValue();
+			} else {
+				R = hitboxRenderer;
+			}
+
+			Entity E = GameObject.getKey();
+
+			R.render(g, E);
+		}
+
+	}
+
+	@Override
+	public void update(GameContainer arg0, int delta) throws SlickException {
+		handleInput(delta);
+
+		for (Entry<Entity, Renderer> GameObject : GameObjects.entrySet()) {
+			Entity E = GameObject.getKey();
+			E.update(delta);
+		}
+	}
+
+	/* Input */
+	//Event based for one-time presses
+	@Override
+	public void keyPressed(int pressedKey, char c) {
+		if (pressedKey == Input.KEY_F3) {
+			showHitbox = !showHitbox;
+		}
+		
+		for (Entry<Entity, Renderer> GameObject : GameObjects.entrySet()) {
+			Entity E = GameObject.getKey();
+
+			for (Method method : E.getClass().getMethods()) {
+				for (Annotation a : method.getAnnotations()) {
+					if (a.annotationType().equals(KeyInput.class)) {
+						int Key = ((KeyInput) a).value();
+						if (((KeyInput) a).state() != KeyInput.State.PRESS) break;
+						if (pressedKey == Key) {
+							try {
+								//System.out.println("Triggering via event");
+								method.invoke(E);
+							} catch (IllegalAccessException
+									| IllegalArgumentException
+									| InvocationTargetException e) {
+								System.err.println("Class "
+												+ E.getClass().toString()
+												+ " fails to implement the KeyInput method "
+												+ method.toString()
+												+ " properly");
+								e.printStackTrace();
+							}
+						}
+					}
+				}
+			}
+		}
+	}
 	
-    public void start() throws LWJGLException {
-        init();
-        initGL();
-        //initTextures();
-        lastFPS = getTime(); //set lastFPS to current Time
-        while (!Display.isCloseRequested()) {
-            getDelta();
-            logic(delta);
-            cls();
-            if (Display.isActive() || Display.isVisible() || Display.isDirty()) {
-                render();
-            }
-            Display.update();
-            // run at 60 FPS
-            if (vsync) Display.sync(60);
-            updateFPS();
-        }
-        cleanup();
-    }
-    
-    public void init() throws LWJGLException {
-        Display.setTitle("Space!");
-        try {
-            Display.setDisplayMode(new DisplayMode(800, 600));
-            Display.create();
-        } catch (LWJGLException e) {
-            e.printStackTrace();
-            System.exit(0);
-        }
-        Mouse.create();
-     }
-	
-    public void updateFPS() {
-        if (getTime() - lastFPS > 1000) {
-            Display.setTitle("FPS: " + fps);
-            fps = 0; //reset the FPS counter
-            lastFPS += 1000; //add one second
-        }
-        fps++;
-    }
+	//Poll based for continuous presses
+	public void handleInput(int delta) {
+		for (Entry<Entity, Renderer> GameObject : GameObjects.entrySet()) {
+			Entity E = GameObject.getKey();
 
-    public long getTime() {
-        return System.nanoTime() / 1000000;
-    }
+			for (Method method : E.getClass().getMethods()) {
+				for (Annotation a : method.getAnnotations()) {
+					if (a.annotationType().equals(KeyInput.class)) {
+						int Key = ((KeyInput) a).value();
+						if (((KeyInput) a).state() != KeyInput.State.DOWN) break;
+						
+						if (input.isKeyDown(Key)) {
+							try {
+								//System.out.println("Triggering via poll");
+								method.invoke(E, delta);
+							} catch (IllegalAccessException
+									| IllegalArgumentException
+									| InvocationTargetException e) {
+								System.err.println("Class "
+												+ E.getClass().toString()
+												+ " fails to implement the KeyInput method "
+												+ method.toString()
+												+ " properly");
+								e.printStackTrace();
+							}
+						}
+					}
+				}
+			}
+		}
+	}
 
-    public void getDelta() {
-        long time = getTime();
-        delta = (int) (time - lastFrame);
-        lastFrame = time;
-    }
-    
-    private void logic(long delta) {
-        //float delta_mod = (float) delta / 1000;
+	/* Helper functions */
 
-    }
+	public long getTime() {
+		return System.nanoTime() / 1000000;
+	}
 
-    
-    /* Graphics stuff */
+	public void getDelta() {
+		long time = getTime();
+		delta = (int) (time - lastFrame);
+		lastFrame = time;
+	}
 
+	/* Main */
 
-	private void initGL() {
-        if (!GLContext.getCapabilities().GL_EXT_framebuffer_object) {
-            System.err.println("FBO not supported");
-        }
-        GL11.glMatrixMode(GL11.GL_PROJECTION);
-        GL11.glLoadIdentity();
-
-        glOrtho(0, RENDER_WIDTH, RENDER_HEIGHT, 0, 10, -10);
-        GL11.glMatrixMode(GL11.GL_MODELVIEW);
-        GL11.glLoadIdentity();
-
-        GL11.glDisable(GL11.GL_DEPTH_TEST);
-
-        GL11.glEnable(GL11.GL_TEXTURE_2D);
-
-        GL11.glEnable(GL11.GL_BLEND);
-        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-    }
-    
-    private void render() {
-        GL11.glPushMatrix();
-
-        //GL11.glTranslatef(Camera.GetX(), Camera.GetY(), 0f);
-        //GL11.glScalef(Camera.GetZoom(), Camera.GetZoom(), 1f);
-
-        drawObjects();
-
-        GL11.glPopMatrix();
-    }
-    
-    private void drawObjects() {
-    	//
-        
-    }
-    
-    private void cleanup() {
-        Display.destroy();
-    }
-
-    private void cls() {
-        // clear the screen
-        glClearColor(0.0f, 1.0f, 0.0f, 0.5f);
-        //glClear(GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
-    }
-    
-	
 	public static void main(String[] args) throws Exception {
-		(new Game()).start();
+		AppGameContainer app = new AppGameContainer(new Game());
+
+		app.setDisplayMode(800, 600, false);
+		app.start();
 	}
 
 }
