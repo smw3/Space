@@ -8,7 +8,7 @@ public class Entity {
 	private Rectangle positionSize = new Rectangle(0f,0f,0f,0f);
 	private float angle = 0f;
 	
-	private String name = "";
+	private String name = "Test";
 	
 	public Entity() {
 
