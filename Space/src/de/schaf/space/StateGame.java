@@ -19,8 +19,10 @@ import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
+import org.newdawn.slick.state.BasicGameState;
+import org.newdawn.slick.state.StateBasedGame;
 
-public class Game extends BasicGame {
+public class StateGame extends BasicGameState {
 
 	private boolean vsync = false;
 
@@ -36,14 +38,14 @@ public class Game extends BasicGame {
 
 	private Input input;
 
-	public Game() {
-		super("Space");
+	public StateGame() {
+		super();
 	}
 
 	/* Gameloop */
 
 	@Override
-	public void init(GameContainer gc) throws SlickException {
+	public void init(GameContainer gc, StateBasedGame stateController) throws SlickException {
 		Entity E = new EntityControlledPlayer();
 		Renderer R = new RendererTriangle();
 		GameObjects.put(E, R);
@@ -52,7 +54,7 @@ public class Game extends BasicGame {
 	}
 
 	@Override
-	public void render(GameContainer gc, Graphics g) throws SlickException {
+	public void render(GameContainer gc, StateBasedGame stateController, Graphics g) throws SlickException {
 		for (Entry<Entity, Renderer> GameObject : GameObjects.entrySet()) {
 			Renderer R;
 
@@ -70,7 +72,7 @@ public class Game extends BasicGame {
 	}
 
 	@Override
-	public void update(GameContainer arg0, int delta) throws SlickException {
+	public void update(GameContainer arg0, StateBasedGame stateController, int delta) throws SlickException {
 		handleInput(delta);
 
 		for (Entry<Entity, Renderer> GameObject : GameObjects.entrySet()) {
@@ -160,13 +162,10 @@ public class Game extends BasicGame {
 		lastFrame = time;
 	}
 
-	/* Main */
-
-	public static void main(String[] args) throws Exception {
-		AppGameContainer app = new AppGameContainer(new Game());
-
-		app.setDisplayMode(800, 600, false);
-		app.start();
+	@Override
+	public int getID() {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
 }

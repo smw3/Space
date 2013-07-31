@@ -17,7 +17,7 @@
 	<classpathentry kind="lib" path="C:/slick/lib/packulike.jar"/>
 	<classpathentry kind="lib" path="C:/slick/lib/pedigree.jar"/>
 	<classpathentry kind="lib" path="C:/slick/lib/scalar.jar"/>
-	<classpathentry kind="lib" path="C:/slick/lib/slick.jar"/>
+	<classpathentry kind="lib" path="C:/slick/lib/slick.jar" sourcepath="C:/slick/src"/>
 	<classpathentry kind="lib" path="C:/slick/lib/slick-sources.jar"/>
 	<classpathentry kind="lib" path="C:/slick/lib/slick-util.jar"/>
 	<classpathentry kind="lib" path="C:/slick/lib/tinylinepp.jar"/>
