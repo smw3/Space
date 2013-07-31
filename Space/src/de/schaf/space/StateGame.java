@@ -22,7 +22,9 @@ import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 
-public class StateGame extends BasicGameState {
+import TWLSlick.BasicTWLGameState;
+
+public class StateGame extends BasicTWLGameState {
 
 	private boolean vsync = false;
 
