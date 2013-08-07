@@ -166,8 +166,7 @@ public class StateGame extends BasicTWLGameState {
 
 	@Override
 	public int getID() {
-		// TODO Auto-generated method stub
-		return 0;
+		return 1;
 	}
 
 }
