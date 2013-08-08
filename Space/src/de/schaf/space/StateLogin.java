@@ -12,33 +12,23 @@ import TWLSlick.BasicTWLGameState;
 import TWLSlick.RootPane;
 
 public class StateLogin extends BasicTWLGameState {
-    private Button btn;
-    private EditField field;
 
+	private LoginFrame loginFrame;
+	
     @Override
     protected RootPane createRootPane() {
         RootPane rp = super.createRootPane();
-        rp.setTheme("loginMenu");
 
-        btn = new Button("Loginnnnnnnnnnnnnnn");
-        btn.addCallback(new Runnable() {
-            public void run() {
-                System.out.println("It works!");
-            }
-        });
-        field = new EditField();
-
-        rp.add(btn);
-        rp.add(field);
+        loginFrame = new LoginFrame();
+       
+        rp.add(loginFrame);
         return rp;
     }
 
     @Override
     protected void layoutRootPane() {
-        btn.adjustSize();
-        btn.setPosition(200, 200);
-        field.setPosition(100, 100);
-        field.setSize(160, 16);
+        //loginFrame.adjustSize();
+        loginFrame.setPosition(100, 100);
     }
 
 	@Override
