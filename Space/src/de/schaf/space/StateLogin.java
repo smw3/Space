@@ -19,7 +19,7 @@ public class StateLogin extends BasicTWLGameState {
     protected RootPane createRootPane() {
         RootPane rp = super.createRootPane();
 
-        loginFrame = new LoginFrame();
+        loginFrame = new LoginFrame(this);
        
         rp.add(loginFrame);
         return rp;

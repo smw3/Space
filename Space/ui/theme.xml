@@ -8,6 +8,7 @@
 
 
 		<select name="ButtonBackground">
+            <alias ref="ButtonNormal" if="disabled"/>
 			<alias ref="ButtonPressed" if="pressed"/>
 			<alias ref="ButtonArmed" if="hover"/>
 			<alias ref="ButtonNormal"/>
@@ -184,6 +185,7 @@
 				<theme name="usernamefield" ref="textField"/>
 				<theme name="passwordfield" ref="passwordField"/>
 				<theme name="button" ref="button"/>
+				<theme name="infolabel" ref="label"/>
                 <param name="namedGaps">
                     <map>
                     </map>
