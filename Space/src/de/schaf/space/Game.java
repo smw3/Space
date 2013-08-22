@@ -5,7 +5,7 @@ import org.newdawn.slick.AppGameContainer;
 import de.matthiasmann.twl.GUI;
 import de.matthiasmann.twl.renderer.lwjgl.LWJGLRenderer;
 
-public class Client {
+public class Game {
 	
 	public static void main(String[] args) throws Exception {
 	
