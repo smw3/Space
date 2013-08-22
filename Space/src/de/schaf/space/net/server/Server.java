@@ -43,7 +43,9 @@ public class Server {
 		} catch ( InterruptedIOException e ) {
 		  System.err.println( "Timeout after ten minutes" );
 		}
-
+	}
+	
+	private void checkConnections() {
 		
 	}
 

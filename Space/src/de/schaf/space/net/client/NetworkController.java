@@ -10,92 +10,16 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 import de.schaf.space.User;
+import de.schaf.space.net.ConnectionThread;
+import de.schaf.space.net.ConnectionThreadListener;
 
-public class NetworkController {
-	
-	private class connectionThread extends Thread {
-	
-		private class inboundThread extends Thread {
-			private Socket serverSocket;
-			
-			public inboundThread(Socket serverSocket) {
-				this.serverSocket = serverSocket;
-			}
-			
-			public void run() {
-				try {
-					BufferedReader in = new BufferedReader(new InputStreamReader( serverSocket.getInputStream()));
-					
-					while(true) {
-						String input = in.readLine();
-						parseConnectionData(input);
-					}
-					
-				} catch (IOException e) {
-					e.printStackTrace();
-					connectionFailed();
-					return;
-				}
-
-			}
-		}
-		
-		private Socket serverSocket;
-		
-		private String serverAdress;
-		private Integer serverPort;
-		
-		public connectionThread() {
-
-		}
-		
-		public void connect(String serverAdress, Integer serverPort) {
-			this.serverAdress = serverAdress;
-			this.serverPort = serverPort;
-			this.start();
-		}
-		
-		public void run() {
-			try {
-				serverSocket = new Socket(serverAdress,serverPort);
-			} catch (IOException e) {
-				e.printStackTrace();
-				connectionFailed();
-				return;
-			}
-			
-			(new inboundThread(serverSocket)).start();
-			
-			PrintStream os;
-			try {
-				os = new PrintStream( serverSocket.getOutputStream() );
-			} catch (IOException e) {
-				e.printStackTrace();
-				connectionFailed();
-				return;
-			}
-			
-			while (true) {
-				while (!outboundQueue.isEmpty()) {
-					String dataToSend = outboundQueue.poll();
-					
-					System.out.print("Send: ");
-					System.out.print(dataToSend +" ");
-					System.out.println();
-					
-					os.println(dataToSend);
-				}
-			}
-		}
-	}
+public class NetworkController implements ConnectionThreadListener {
 	
 	private static NetworkController instance;
 	
 	private NetworkErrorListener networkErrorListener = null;
 	
-	private connectionThread connectionThread = new connectionThread();
-	
-	private volatile Queue<String> outboundQueue = new LinkedList<String>();
+	private ConnectionThread connectionThread = new ConnectionThread(this);
 	
 	private final String serverAdress = "localhost";
 	private final Integer serverPort = 3567;
@@ -118,23 +42,24 @@ public class NetworkController {
 		return instance;
 	}
 	
-	private connectionThread getNetworkThread() {
+	private ConnectionThread getNetworkThread() {
 		return connectionThread;
 	}
 	
 	public void connect() {
-		getNetworkThread().connect(serverAdress,serverPort);
-		sendMessage("Hello world!");
+		if (!getNetworkThread().isConnected()) {
+			getNetworkThread().connect(serverAdress,serverPort);
+		}
+		getNetworkThread().sendMessage("Hello world!");
 	}
-	
-	public void sendMessage(String P) {
-		outboundQueue.add(P);
-	}
-
 
 	public void connectionFailed() {
-		connectionThread = new connectionThread(); // Most likely a bad idea 
-		if (networkErrorListener != null) networkErrorListener.connectionError("Failed to connect!");
+		connectionThread = new ConnectionThread(this); // Most likely a bad idea 
+		throwError("Failed to connect!");
+	}
+	
+	private void throwError(String err) {
+		if (networkErrorListener != null) networkErrorListener.connectionError(err);		
 	}
 	
 	public synchronized void parseConnectionData(String data) {

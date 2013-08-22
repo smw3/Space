@@ -63,7 +63,7 @@ public class LoginFrame extends ResizableFrame implements NetworkErrorListener {
 		
 		infoLabel.setAutoSize(false);
 		
-		loginButton.setEnabled(false);
+		//loginButton.setEnabled(false);
 		infoLabel.setText("Connecting...");
 
 		
