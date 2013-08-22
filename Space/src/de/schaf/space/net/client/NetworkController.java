@@ -1,4 +1,4 @@
-package de.schaf.space;
+package de.schaf.space.net.client;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -8,6 +8,8 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.LinkedList;
 import java.util.Queue;
+
+import de.schaf.space.User;
 
 public class NetworkController {
 	

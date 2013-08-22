@@ -6,6 +6,8 @@ import de.matthiasmann.twl.DialogLayout;
 import de.matthiasmann.twl.EditField;
 import de.matthiasmann.twl.Label;
 import de.matthiasmann.twl.ResizableFrame;
+import de.schaf.space.net.client.NetworkController;
+import de.schaf.space.net.client.NetworkErrorListener;
 
 public class LoginFrame extends ResizableFrame implements NetworkErrorListener {
 

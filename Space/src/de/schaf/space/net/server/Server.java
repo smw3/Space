@@ -1,4 +1,4 @@
-package de.schaf.space.server;
+package de.schaf.space.net.server;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -9,9 +9,13 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Server {
 
+	private List<SpaceClient> clientList = new ArrayList<SpaceClient>();
+	
 
 	public static void main(String[] args) throws IOException {
 		(new Server()).start();
