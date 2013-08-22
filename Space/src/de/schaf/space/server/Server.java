@@ -1,4 +1,4 @@
-package de.schaf.space;
+package de.schaf.space.server;
 
 import java.io.BufferedReader;
 import java.io.IOException;
