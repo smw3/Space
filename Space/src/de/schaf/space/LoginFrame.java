@@ -1,15 +1,18 @@
 package de.schaf.space;
 
+import com.esotericsoftware.kryonet.Connection;
+import com.esotericsoftware.kryonet.Listener;
+
 import TWLSlick.BasicTWLGameState;
 import de.matthiasmann.twl.Button;
 import de.matthiasmann.twl.DialogLayout;
 import de.matthiasmann.twl.EditField;
 import de.matthiasmann.twl.Label;
 import de.matthiasmann.twl.ResizableFrame;
-import de.schaf.space.net.client.NetworkController;
-import de.schaf.space.net.client.NetworkErrorListener;
+import de.schaf.space.net.client.ClientNetworkController;
+import de.schaf.space.net.packet.*;
 
-public class LoginFrame extends ResizableFrame implements NetworkErrorListener {
+public class LoginFrame extends ResizableFrame {
 
 	private final EditField userField;
 	private final EditField passField;
@@ -53,6 +56,30 @@ public class LoginFrame extends ResizableFrame implements NetworkErrorListener {
 		this.setResizableAxis(ResizableAxis.HORIZONTAL);
 		
 		add(DLayout);
+		
+		
+		Game.ClientNetworkController.setListener(new Listener() {
+			public void connected (Connection connection) {
+				infoLabel.setText("Connected");
+			}
+			
+			public void disconnected (Connection connection) {
+				infoLabel.setText("Disconnected");
+			}
+			
+			public void received (Connection connection, Object object) {
+				if (object instanceof PacketServerLoginSuccessfull) {
+					infoLabel.setText("Login successfull!");
+				}
+				if (object instanceof PacketServerLoginFailed) {
+					PacketServerLoginFailed P = (PacketServerLoginFailed)object;
+					infoLabel.setText("Login failed: "+P.Reason);
+				}
+			}
+		});
+		
+		
+		
 	}
 	
 	public synchronized void doLogin(String Username, String Password) {
@@ -66,21 +93,9 @@ public class LoginFrame extends ResizableFrame implements NetworkErrorListener {
 		//loginButton.setEnabled(false);
 		infoLabel.setText("Connecting...");
 
-		
-		NetworkController networkController = NetworkController.getInstance();
-		
-		networkController.setErrorListener(this);
-		
-		networkController.createUser(Username, Password);
-		
-		networkController.connect();
-		
-	}
+		Game.ClientNetworkController.login(Username,Password);
 
-	@Override
-	public void connectionError(String info) {
-		infoLabel.setText(info);
-		loginButton.setEnabled(true);
+		
 	}
 
 }
